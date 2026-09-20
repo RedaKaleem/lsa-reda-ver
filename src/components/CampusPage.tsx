@@ -1,7 +1,11 @@
 import { useEffect, useState } from 'react'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { getRouteHref } from '../data/routes'
 import { ButtonLink } from './Button'
 import { Container, Section } from './Layout'
+
+gsap.registerPlugin(ScrollTrigger)
 
 const campusImages = [
   { src: `${import.meta.env.BASE_URL}media/classroom-imgs/optimized/2SP00752.jpg`, alt: 'Students learning technology together in an LSA classroom', label: 'WORKSHOPS' },
@@ -47,6 +51,31 @@ export function CampusPage() {
     return () => window.clearInterval(timer)
   }, [isSlideshowPaused])
 
+  useEffect(() => {
+    const section = document.querySelector<HTMLElement>('.campus-page-motion')
+    if (!section || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+
+    const animationContext = gsap.context(() => {
+      gsap.fromTo(
+        '.campus-motion-background img',
+        { scale: 1 },
+        {
+          scale: 1.14,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: section,
+            start: 'top bottom',
+            end: 'bottom top',
+            scrub: 1.2,
+            invalidateOnRefresh: true,
+          },
+        },
+      )
+    }, section)
+
+    return () => animationContext.revert()
+  }, [])
+
   const moveSlide = (direction: -1 | 1) => {
     setActiveSlide((current) => (current + direction + campusImages.length) % campusImages.length)
   }
@@ -73,9 +102,11 @@ export function CampusPage() {
       </Section>
 
       <Section className="campus-page-motion">
-        <Container>
+        <div className="campus-motion-background" aria-hidden="true">
+          {campusImages.slice(1, 4).map((image) => <img src={image.src} alt="" width="5146" height="3217" loading="lazy" key={image.src} />)}
+        </div>
+        <Container className="campus-motion-content">
           <div className="campus-section-intro"><div><p className="section-marker">04 — LEARNING IN MOTION</p><h2>Learning moves through different environments.</h2></div><p>Use the classroom, the workshop, the project, and the shared experience as places to keep learning active.</p></div>
-          <div className="campus-motion-gallery">{campusImages.slice(1, 4).map((image) => <figure key={image.src}><img src={image.src} alt={image.alt} width="5146" height="3217" loading="lazy" /><figcaption>{image.label}</figcaption></figure>)}</div>
         </Container>
       </Section>
 
@@ -97,11 +128,10 @@ export function CampusPage() {
                 <button type="button" aria-label="Next campus image" onClick={() => moveSlide(1)}>→</button>
               </div>
             </div>
-            <div className="campus-slideshow-thumbnails" aria-label="Choose a campus image">
+            <div className="campus-slideshow-dots" aria-label="Choose a campus image">
               {campusImages.map((image, index) => (
                 <button className={index === activeSlide ? 'is-active' : ''} type="button" key={image.src} aria-label={`Show ${image.label.toLowerCase()}`} aria-current={index === activeSlide ? 'true' : undefined} onClick={() => setActiveSlide(index)}>
-                  <img src={image.src} alt="" width="5146" height="3217" loading="lazy" />
-                  <span>{image.label}</span>
+                  <span className="sr-only">{image.label}</span>
                 </button>
               ))}
             </div>
