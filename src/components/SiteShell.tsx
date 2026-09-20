@@ -10,7 +10,7 @@ import { siteInfo } from '../data/site'
 
 gsap.registerPlugin(ScrollTrigger)
 
-const darkHeaderSections = '.home-hero, .philosophy-section, .blog-page-cta, .blog-post-hero, .program-detail-hero, .contact-page-hero, .about-page-hero, .campus-editorial-hero, .programs-page-hero, .learning-page-hero, .site-footer'
+const darkHeaderSections = '.home-hero, .philosophy-section, .blog-page-cta, .blog-post-hero, .program-detail-hero, .contact-page-hero, .about-page-hero, .campus-editorial-hero, .campus-page-motion, .programs-page-hero, .learning-page-hero, .certificates-page-hero, .certificate-verification-info, .certificates-page-cta, .site-footer'
 
 export function SiteShell({ children, route }: PropsWithChildren<{ route: SiteRoute }>) {
   const [isScrolled, setIsScrolled] = useState(false)
